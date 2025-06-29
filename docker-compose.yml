@@ -1,28 +1,35 @@
 version: '3.8'
+
 services:
   kafka:
-    image: confluentinc/cp-kafka:latest
-    hostname: kafka
+    image: confluentinc/cp-kafka:7.4.0
     container_name: kafka
     ports:
-      - "9093:9093"
+      - "9092:9092" # For client access
     environment:
-      KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9094
+      KAFKA_NODE_ID: 1
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_KRAFT_BROKER_ID: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+    
     volumes:
-      - kafka-data:/var/lib/kafka/data
+      - kafka-data:/tmp/kraft-combined-logs
+    
     networks:
-      - kafka-net
+      kafka-net:
+
+volumes:
+  kafka-data:
 
 networks:
   kafka-net:
     driver: bridge
-
-volumes:
-  kafka-data:

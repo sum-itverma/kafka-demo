@@ -22,6 +22,3 @@ for order in orders:
     time.sleep(1)
     
 producer.flush()
-
-
-/usr/bin/kafka-topics --bootstrap-server kafka:9092 --create --if-not-exists --topic image_input --partitions 2 --replication-factor 1;
